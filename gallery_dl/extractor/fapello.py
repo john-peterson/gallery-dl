@@ -4,29 +4,29 @@
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
 
-"""Extractors for https://fapello.com/"""
+"""Extractors for https://fapello.su/"""
 
 from .common import Extractor, Message
 from .. import text, exception
 
 
 class FapelloPostExtractor(Extractor):
-    """Extractor for individual posts on fapello.com"""
+    """Extractor for individual posts on fapello.su"""
     category = "fapello"
     subcategory = "post"
     directory_fmt = ("{category}", "{model}")
     filename_fmt = "{model}_{id}.{extension}"
     archive_fmt = "{type}_{model}_{id}"
-    pattern = (r"(?:https?://)?(?:www\.)?fapello\.com"
+    pattern = (r"(?:https?://)?(?:www\.)?fapello\.su"
                r"/(?!search/|popular_videos/)([^/?#]+)/(\d+)")
-    example = "https://fapello.com/MODEL/12345/"
+    example = "https://fapello.su/MODEL/12345/"
 
     def __init__(self, match):
         Extractor.__init__(self, match)
         self.model, self.id = match.groups()
 
     def items(self):
-        url = "https://fapello.com/{}/{}/".format(self.model, self.id)
+        url = "https://fapello.su/{}/{}/".format(self.model, self.id)
         page = text.extr(
             self.request(url, allow_redirects=False).text,
             'class="uk-align-center"', "</div>", None)
@@ -48,11 +48,11 @@ class FapelloModelExtractor(Extractor):
     """Extractor for all posts from a fapello model"""
     category = "fapello"
     subcategory = "model"
-    pattern = (r"(?:https?://)?(?:www\.)?fapello\.com"
+    pattern = (r"(?:https?://)?(?:www\.)?fapello\.su"
                r"/(?!top-(?:likes|followers)|popular_videos"
                r"|videos|trending|search/?$)"
                r"([^/?#]+)/?$")
-    example = "https://fapello.com/model/"
+    example = "https://fapello.su/model/"
 
     def __init__(self, match):
         Extractor.__init__(self, match)
@@ -62,7 +62,7 @@ class FapelloModelExtractor(Extractor):
         num = 1
         data = {"_extractor": FapelloPostExtractor}
         while True:
-            url = "https://fapello.com/ajax/model/{}/page-{}/".format(
+            url = "https://fapello.su/ajax/model/{}/page-{}/".format(
                 self.model, num)
             page = self.request(url).text
             if not page:
@@ -74,13 +74,13 @@ class FapelloModelExtractor(Extractor):
 
 
 class FapelloPathExtractor(Extractor):
-    """Extractor for models and posts from fapello.com paths"""
+    """Extractor for models and posts from fapello.su paths"""
     category = "fapello"
     subcategory = "path"
-    pattern = (r"(?:https?://)?(?:www\.)?fapello\.com"
+    pattern = (r"(?:https?://)?(?:www\.)?fapello\.su"
                r"/(?!search/?$)(top-(?:likes|followers)|videos|trending"
                r"|popular_videos/[^/?#]+)/?$")
-    example = "https://fapello.com/trending/"
+    example = "https://fapello.su/trending/"
 
     def __init__(self, match):
         Extractor.__init__(self, match)
@@ -94,7 +94,7 @@ class FapelloPathExtractor(Extractor):
             data = {"_extractor": FapelloPostExtractor}
 
         while True:
-            page = self.request("https://fapello.com/ajax/{}/page-{}/".format(
+            page = self.request("https://fapello.su/ajax/{}/page-{}/".format(
                 self.path, num)).text
             if not page:
                 return
